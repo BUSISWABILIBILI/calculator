@@ -51,9 +51,18 @@ button {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
+button:hover {
+  background: #555;
+}
+
 .operator,
 .equals {
   background: #ff9500;
+}
+
+.operator:hover,
+.equals:hover {
+  background: #ff7f00;
 }
 
 .zero {
