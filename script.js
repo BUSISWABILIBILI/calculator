@@ -36,6 +36,7 @@ const display = document.querySelector(".display");
 const clearButton = document.querySelector(".clear");
 const equalsButton = document.querySelector(".equals");
 const deleteButton = document.querySelector(".delete");
+const historyDisplay = document.querySelector("#history");
 
 let currentInput = "";
 let firstNumber = "";
@@ -44,12 +45,19 @@ let shouldResetDisplay = false;
 
 // Update screen
 function updateDisplay(value) {
-  display.textContent = value || "0";
+  display.style.opacity = 0;
+  setTimeout(() => {
+    display.textContent = value || "0";
+    display.style.opacity = 1;
+  }, 80);
 }
 
 buttons.forEach((button) => {
   button.addEventListener("click", () => {
     const value = button.textContent;
+
+    button.classList.add("pop");
+    setTimeout(() => button.classList.remove("pop"), 150);
 
     // Skip special buttons
     if (
@@ -118,8 +126,10 @@ deleteButton.addEventListener("click", () => {
 equalsButton.addEventListener("click", () => {
   if (firstNumber === "" || operator === null || currentInput === "") return;
 
+  const expression = `${firstNumber} ${operator} ${currentInput}`;
   const result = operate(operator, firstNumber, currentInput);
 
+  historyDisplay.textContent = expression;
   updateDisplay(result);
 
   currentInput = result.toString();
