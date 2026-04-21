@@ -22,12 +22,14 @@ function operate(operator, num1, num2) {
   switch (operator) {
     case "+":
       return add(num1, num2);
-    case "-":
+    case "−":
       return subtract(num1, num2);
-    case "*":
+    case "×":
       return multiply(num1, num2);
     case "÷":
       return divide(num1, num2);
+    default:
+      return num2;
   }
 }
 
@@ -43,15 +45,17 @@ let firstNumber = "";
 let operator = null;
 let shouldResetDisplay = false;
 
-// Update screen
+// Update display
 function updateDisplay(value) {
   display.style.opacity = 0;
+
   setTimeout(() => {
     display.textContent = value || "0";
     display.style.opacity = 1;
   }, 80);
 }
 
+// Button clicks
 buttons.forEach((button) => {
   button.addEventListener("click", () => {
     const value = button.textContent;
@@ -59,7 +63,7 @@ buttons.forEach((button) => {
     button.classList.add("pop");
     setTimeout(() => button.classList.remove("pop"), 150);
 
-    // Skip special buttons
+    // ignore special buttons here
     if (
       button.classList.contains("clear") ||
       button.classList.contains("equals") ||
@@ -68,21 +72,19 @@ buttons.forEach((button) => {
       return;
     }
 
-    // Reset after equals
+    // reset after equals
     if (shouldResetDisplay) {
       currentInput = "";
       shouldResetDisplay = false;
     }
 
-    // Handle operators
-    if (["+", "-", "*", "÷"].includes(value)) {
-      // Prevent double operators
-      if (currentInput === "" && operator !== null) {
+    // operators
+    if (["+", "−", "×", "÷"].includes(value)) {
+      if (currentInput === "" && operator) {
         operator = value;
         return;
       }
 
-      // Chain operations
       if (firstNumber !== "" && currentInput !== "") {
         const result = operate(operator, firstNumber, currentInput);
         updateDisplay(result);
@@ -96,7 +98,7 @@ buttons.forEach((button) => {
       return;
     }
 
-    // Handle decimal
+    // decimal
     if (value === ".") {
       if (currentInput.includes(".")) return;
       if (currentInput === "") currentInput = "0";
@@ -107,29 +109,30 @@ buttons.forEach((button) => {
   });
 });
 
-// Clear
+// CLEAR
 clearButton.addEventListener("click", () => {
   currentInput = "";
   firstNumber = "";
   operator = null;
   shouldResetDisplay = false;
+  historyDisplay.textContent = "";
   updateDisplay("0");
 });
 
-// Delete
+// DELETE
 deleteButton.addEventListener("click", () => {
   currentInput = currentInput.slice(0, -1);
-  updateDisplay(currentInput);
+  updateDisplay(currentInput || "0");
 });
 
-// Equals
+// EQUALS
 equalsButton.addEventListener("click", () => {
-  if (firstNumber === "" || operator === null || currentInput === "") return;
+  if (!firstNumber || !operator || !currentInput) return;
 
   const expression = `${firstNumber} ${operator} ${currentInput}`;
   const result = operate(operator, firstNumber, currentInput);
 
-  historyDisplay.textContent = expression;
+  historyDisplay.textContent = `${expression} =`;
   updateDisplay(result);
 
   currentInput = result.toString();
@@ -138,9 +141,13 @@ equalsButton.addEventListener("click", () => {
   shouldResetDisplay = true;
 });
 
-// Keyboard support
+// KEYBOARD SUPPORT
 document.addEventListener("keydown", (e) => {
   if (!isNaN(e.key)) {
+    if (shouldResetDisplay) {
+      currentInput = "";
+      shouldResetDisplay = false;
+    }
     currentInput += e.key;
   }
 
@@ -160,8 +167,8 @@ document.addEventListener("keydown", (e) => {
   if (["+", "-", "*", "/"].includes(e.key)) {
     const map = {
       "+": "+",
-      "-": "-",
-      "*": "*",
+      "-": "−",
+      "*": "×",
       "/": "÷",
     };
 
