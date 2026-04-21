@@ -28,6 +28,8 @@ function operate(operator, num1, num2) {
       return multiply(num1, num2);
     case "÷":
       return divide(num1, num2);
+    case "%":
+      return num1 / 100;
     default:
       return num2;
   }
@@ -76,6 +78,14 @@ buttons.forEach((button) => {
     if (shouldResetDisplay) {
       currentInput = "";
       shouldResetDisplay = false;
+    }
+
+    if (value === "%") {
+      if (currentInput === "") return;
+
+      currentInput = (parseFloat(currentInput) / 100).toString();
+      updateDisplay(currentInput);
+      return;
     }
 
     // operators
@@ -149,6 +159,13 @@ document.addEventListener("keydown", (e) => {
       shouldResetDisplay = false;
     }
     currentInput += e.key;
+  }
+
+  if (e.key === "%") {
+    if (currentInput === "") return;
+    currentInput = (parseFloat(currentInput) / 100).toString();
+    updateDisplay(currentInput);
+    return;
   }
 
   if (e.key === ".") {
