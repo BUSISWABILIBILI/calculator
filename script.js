@@ -74,22 +74,25 @@ buttons.forEach((button) => {
       return;
     }
 
-    // reset after equals
-    if (shouldResetDisplay) {
-      currentInput = "";
-      shouldResetDisplay = false;
-    }
-
     if (value === "%") {
       if (currentInput === "") return;
 
       currentInput = (parseFloat(currentInput) / 100).toString();
       updateDisplay(currentInput);
+      shouldResetDisplay = false;
       return;
     }
 
     // operators
     if (["+", "−", "×", "÷"].includes(value)) {
+      if (shouldResetDisplay) {
+        firstNumber = currentInput;
+        operator = value;
+        currentInput = "";
+        shouldResetDisplay = false;
+        return;
+      }
+
       if (currentInput === "" && operator) {
         operator = value;
         return;
@@ -106,6 +109,13 @@ buttons.forEach((button) => {
       operator = value;
       currentInput = "";
       return;
+    }
+
+    // reset after equals only when starting a new number
+    if (shouldResetDisplay) {
+      currentInput = "";
+      historyDisplay.textContent = "";
+      shouldResetDisplay = false;
     }
 
     // decimal
